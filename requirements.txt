@@ -1,0 +1,9 @@
+streamlit
+nltk
+textblob
+wordcloud
+arabic-reshaper
+python-bidi
+matplotlib
+pandas
+openpyxl
