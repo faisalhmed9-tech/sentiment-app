@@ -1,9 +1,40 @@
-streamlit
-nltk
-textblob
-wordcloud
-arabic-reshaper
-python-bidi
-matplotlib
-pandas
-openpyxl
+import streamlit as st
+import pandas as pd
+from textblob import TextBlob
+
+# إعدادات واجهة التطبيق
+st.set_page_config(page_title="محلل فيصل الذكي", page_icon="📊")
+
+st.title("📊 تطبيق فيصل لتحليل المشاعر")
+st.write("اكتب جملة وسأقوم بتحليلها وحفظها في جدول فوري!")
+
+# مكان كتابة النص
+user_input = st.text_input("أدخل النص هنا (عربي أو إنجليزي):")
+
+if st.button("حلل النتيجة"):
+    if user_input:
+        # تحليل المشاعر
+        score = TextBlob(user_input).sentiment.polarity
+        
+        # تصنيف النتيجة بناءً على كلمات عربية أو تحليل نصي
+        if score > 0 or any(word in user_input for word in ['حلو', 'جميل', 'ممتاز', 'رائع', 'كفو']):
+            result = "إيجابي 😊"
+            st.balloons()
+        elif score < 0 or any(word in user_input for word in ['سيء', 'خايس', 'تعبان', 'بطيء', 'زفت']):
+            result = "سلبي 😞"
+        else:
+            result = "محايد 😐"
+            
+        st.subheader(f"النتيجة: {result}")
+        
+        # عرض الجدول (الفكرة اللي أعجبتك)
+        df = pd.DataFrame({
+            "النص المكتوب": [user_input],
+            "تصنيف المشاعر": [result]
+        })
+        st.markdown("---")
+        st.write("### 📜 السجل الفوري للتحليل:")
+        st.table(df)
+    else:
+        st.warning("يا فيصل، اكتب شي أول عشان أقدر أحله لك!")
+
