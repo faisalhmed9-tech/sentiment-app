@@ -1,4 +1,53 @@
 import streamlit as st
+st.markdown("""
+    <style>
+    /* خلفية كحلي ملكي ثابتة */
+    .stApp {
+        background-color: #0f172a; 
+        color: white;
+    }
+
+    /* تصميم صندوق النص */
+    .stTextInput>div>div>input {
+        background-color: #1e293b !important;
+        color: white !important;
+        border: 2px solid #38bdf8 !important;
+        border-radius: 12px !important;
+    }
+
+    /* زر التحليل */
+    .stButton>button {
+        width: 100%;
+        background-color: #38bdf8;
+        color: #0f172a;
+        font-weight: bold;
+        border-radius: 12px;
+        border: none;
+        padding: 10px;
+    }
+
+    /* برواز النتيجة الإيجابية */
+    .positive-glow {
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #22c55e;
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #4ade80;
+        text-align: center;
+    }
+
+    /* برواز النتيجة السلبية */
+    .negative-glow {
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #ef4444;
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+        text-align: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 import pandas as pd
 from textblob import TextBlob
 from gtts import gTTS
