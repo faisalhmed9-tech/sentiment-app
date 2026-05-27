@@ -1,108 +1,95 @@
 import streamlit as st
-import pandas as pd
 from textblob import TextBlob
-from gtts import gTTS
-import base64
+import urllib.parse
 import random
 
-# --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="محلل المشاعر الذكي", page_icon="🤖")
+# --- 1. إعدادات الصفحة الفخمة ---
+st.set_page_config(page_title="تطبيق الشهير حمد", page_icon="🤖", layout="centered")
 
-# --- 2. دالة الصوت ---
-def speak(text):
-    try:
-        tts = gTTS(text=text, lang='ar')
-        tts.save("speech.mp3")
-        with open("speech.mp3", "rb") as f:
-            data = f.read()
-        b64 = base64.b64encode(data).decode()
-        md = f'<audio controls autoplay><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>'
-        st.markdown(md, unsafe_allow_html=True)
-    except:
-        pass
+# --- 2. قوائم اليوتيوب (محتوى هادف وبدون موسيقى) ---
+neg_videos = [
+    "https://www.youtube.com/watch?v=M9pX_m_oZg0", 
+    "https://www.youtube.com/watch?v=M6Z_D0u_Sxk"
+]
+neu_videos = [
+    "https://www.youtube.com/watch?v=6m82_A8Y0S4", 
+    "https://www.youtube.com/watch?v=S2uF6Mh6D4s",
+    "https://www.youtube.com/watch?v=jP649Z78NYU"
+]
 
-# --- 3. واجهة المستخدم ---
-st.title("🤖 محلل المشاعر الذكي - نسخة المشاهير")
+# --- 3. واجهة التطبيق الرئيسية ---
+st.title("🤖 تطبيق الشهير حمد لتحليل المشاعر")
 st.markdown("---")
 
-visitor_name = st.text_input("يا هلا بك! وش اسمك الكريم؟")
+# مدخلات المستخدم
+name = st.text_input("سجل اسمك الكريم:")
+gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-# اختيار الجنس لتحديد الألوان واللقب
-gender = st.radio("كيف تحب أن أخاطبك؟", ["ذكر", "أنثى"], horizontal=True)
-
-# تحديد الألوان واللقب بناءً على الاختيار
+# تخصيص اللقب واللون بناءً على الجنس
 if gender == "ذكر":
-    main_color = "#1e90ff"  # أزرق
-    bg_color = "rgba(30, 144, 255, 0.1)"
-    title_prefix = "الشهير"
-    welcome = f"مرحباً بك يا {title_prefix} **{visitor_name}** ⚡"
-    ask_feel = "وش تحس فيه الحين؟"
+    prefix, accent_color = "الشهير", "#1e90ff"
 else:
-    main_color = "#ff69b4"  # وردي
-    bg_color = "rgba(255, 105, 180, 0.1)"
-    title_prefix = "الشهيرة"
-    welcome = f"مرحباً بك يا {title_prefix} **{visitor_name}** ✨"
-    ask_feel = "وش تحسين فيه الحين؟"
+    prefix, accent_color = "الشهيرة", "#ff69b4"
 
-# تطبيق الثيم الملون
-st.markdown(f"""
-    <style>
-    .result-box {{
-        padding: 20px; border-radius: 15px; border: 2px solid {main_color};
-        background-color: {bg_color}; color: white;
-        text-align: center; box-shadow: 0 0 15px {main_color}; margin: 10px 0;
-    }}
-    h1, h2, h3 {{ color: {main_color} !important; }}
-    </style>
-    """, unsafe_allow_html=True)
+user_text = st.text_area(f"يا {prefix} {name}، عبر عما في داخلك وسأقوم بتحليله:", height=150)
 
-if visitor_name:
-    st.write(welcome)
-    user_input = st.text_input(ask_feel)
+if st.button("إجراء التحليل الذكي 🔍"):
+    if name and user_text:
+        # عملية التحليل البرمجي
+        blob = TextBlob(user_text)
+        score = blob.sentiment.polarity
+        
+        # إحصائيات إضافية (كلام زيادة لإبهار المستخدم)
+        words_count = len(user_text.split())
+        chars_count = len(user_text)
+        
+        st.markdown(f"### 📊 تقرير التحليل لـ {prefix} {name}:")
+        
+        # عرض عدادات النص
+        c1, c2 = st.columns(2)
+        c1.metric("عدد الكلمات", words_count)
+        c2.metric("عدد الحروف", chars_count)
 
-    if st.button("تحليل المشاعر"):
-        if user_input:
-            blob = TextBlob(user_input)
-            score = blob.sentiment.polarity
+        # --- الحالة 1: الإيجابية 😍 ---
+        if score > 0.1:
+            st.balloons()
+            st.success(f"طاقتك إيجابية مذهلة يا {prefix} {name}! ✨")
+            st.info("💡 نصيحة حمد: السعادة تزداد عندما نشاركها، أخبر أحبابك بنتيجتك!")
             
-            # قوائم الكلمات العربية للفهم الدقيق
-            pos_words = ['سعيد', 'مبسوط', 'كفو', 'جميل', 'حلو', 'بطل', 'فخم', 'ممتاز', 'شكرا', 'وناسة', 'راضي', 'مبدع']
-            neg_words = ['سيء', 'خايس', 'تعبان', 'متضايق', 'زعلان', 'حزين', 'ضيق', 'فاشل', 'غبي', 'قهر']
+            # زر الواتساب المباشر
+            msg = f"أنا {prefix} {name}، حللت مشاعري في تطبيق 'الشهير حمد' وطلعت نتيجتي إيجابية 🔥! جربوا حظكم: https://sentiment-app-cncmahfqt2zhxibcsofljg.streamlit.app/"
+            whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
+            st.markdown(f'''<a href="{whatsapp_url}" target="_blank">
+                <button style="width:100%; background-color:#25D366; color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">
+                📢 أرسل نتيجتك الإيجابية للأصدقاء والأقارب
+                </button></a>''', unsafe_allow_html=True)
 
-            found_pos = any(word in user_input for word in pos_words)
-            found_neg = any(word in user_input for word in neg_words)
+        # --- الحالة 2: السلبية 😔 ---
+        elif score < -0.1:
+            st.error(f"وسع صدرك يا {prefix} {name}، كل مر سيمر بإذن الله.")
+            st.info("💡 نصيحة حمد: خذ استراحة قصيرة وشاهد هذا المقطع لتغيير جوك.")
+            st.write("🎬 **مقطع فيديو مختار لك بعناية:**")
+            st.video(random.choice(neg_videos))
 
-            if found_pos or score > 0.1:
-                advice = random.choice(["يومك سعيد يا بطل! 🚀", "طاقة إيجابية فخمة 🔥", "دووم هالانبساط يا رب! ✨"])
-                st.markdown(f'<div class="result-box"><h3>النتيجة: إيجابي 😍 ✨</h3><p>{advice}</p></div>', unsafe_allow_html=True)
-                st.balloons()
-                msg = f"ما شاء الله، كلامك كله إيجابية يا {title_prefix} {visitor_name}. {advice}"
-            
-            elif found_neg or score < -0.1:
-                advice = random.choice(["استغفر الله، وريح بالك.. 🤲", "قم اشرب قهوة وروّق ☕", "تذكر: إن مع العسر يسراً ✨"])
-                st.markdown(f'<div class="result-box"><h3>النتيجة: سلبي 😔 💔</h3><p>{advice}</p></div>', unsafe_allow_html=True)
-                msg = f"النتيجة سلبية يا {title_prefix} {visitor_name}. نصيحتي لك: {advice}"
-            
-            else:
-                advice = "كلامك موزون وهادي.. 🤔"
-                st.markdown(f'<div class="result-box"><h3>النتيجة: محايد 😐</h3><p>{advice}</p></div>', unsafe_allow_html=True)
-                msg = f"هذه جملة محايدة يا {title_prefix} {visitor_name}. {advice}"
-
-            st.write(f"### 🔊 اسمع النتيجة بصوت {title_prefix}:")
-            speak(msg)
-            
-            st.write("---")
-            st.table(pd.DataFrame({
-                "الاسم": [visitor_name], 
-                "اللقب": [title_prefix],
-                "الجنس": [gender], 
-                "النص": [user_input],
-                "التصنيف": [msg]
-            }))
+        # --- الحالة 3: المحايدة ⚖️ (المربع الذهبي) ---
         else:
-            st.warning("اكتب شيئاً أولاً!")
-else:
-    st.info("سجل اسمك لبدء التجربة")
+            st.warning(f"مزاجك اليوم 'منطقة ذهبية'.. متزن ورايق يا {prefix} {name} ⚖️")
+            st.markdown("""
+                <div style="background-color:rgba(255, 215, 0, 0.1); padding:20px; border-radius:15px; border:2px solid #ffd700; text-align:center;">
+                    <h4 style="color:#ffd700; margin:0;">🌟 ميزة الشخص المتزن:</h4>
+                    <p style="color:white; margin:10px 0;">بما أن عقلك في حالة هدوء وتركيز عالية، ننصحك بمشاهدة هذا المقطع الثقافي السريع:</p>
+                </div>
+            """, unsafe_allow_html=True)
+            st.video(random.choice(neu_videos))
+            
+    else:
+        st.error("لطفاً، نحتاج الاسم والنص لنبدأ التحليل!")
+
+# --- التذييل النهائي ---
+st.markdown("---")
+st.markdown(f"<center>تم التطوير بكل فخر بواسطة <b>الشهير حمد</b> | 2026</center>", unsafe_allow_html=True)
+
+
     
 
 
