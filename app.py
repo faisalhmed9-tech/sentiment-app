@@ -29,10 +29,9 @@ name = st.text_input("سجل اسمك الكريم:")
 gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
 # تحديد اللقب بناءً على الجنس
+display_name = name.strip() if name.strip() else "يا بطل"
 prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
-
-# منطقة كتابة المشاعر
-user_text = st.text_area(f"يا {prefix} {name}، وش شعورك اليوم؟ صف لنا حالتك..", height=150)
+user_text = st.text_area(f"{prefix} {display_name}، وش شعورك اليوم؟ صف لنا حالتك..", height=150)
 
 # --- 4. منطق التحليل والمعالجة ---
 if st.button("تحليل النتيجة 🔍"):
