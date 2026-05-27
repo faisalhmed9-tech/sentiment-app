@@ -5,11 +5,9 @@ import random
 # --- 1. إعدادات الصفحة الأساسية ---
 st.set_page_config(page_title="نظام حمد الذكي 2026", page_icon="🛡️")
 
-# --- 2. قاعدة البيانات (الكلمات الممنوعة والفيديوهات) ---
-# يمكنك إضافة أي كلمات تريد منعها هنا
+# --- 2. قاعدة البيانات ---
 bad_words = ["كلمة1", "كلمة2", "كلمة3"] 
 
-# روابط فيديوهات الحالات (تتغير عشوائياً)
 neg_videos = [
     "https://www.youtube.com/watch?v=2p8nreL_lTo", 
     "https://www.youtube.com/watch?v=pY9InT15v70"
@@ -28,7 +26,7 @@ st.markdown("---")
 name = st.text_input("سجل اسمك الكريم:")
 gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-# تحديد اللقب بناءً على الجنس
+# التعديل حق الاسم
 display_name = name.strip() if name.strip() else "يا بطل"
 prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
 user_text = st.text_area(f"{prefix} {display_name}، وش شعورك اليوم؟ صف لنا حالتك..", height=150)
@@ -38,43 +36,37 @@ if st.button("تحليل النتيجة 🔍"):
     if name and user_text:
         t = user_text.lower()
         
-        # التأكد من خلو النص من الكلمات السيئة
         if any(word in t for word in bad_words):
             st.error("⚠️ عذراً يا بطل، النص يحتوي على كلمات غير ملائمة. فضلاً اجعل كلامك راقياً مثلك.")
         else:
-            # قوائم الكلمات المفتاحية للتحليل
             pos_keywords = ["سعيد", "مستانس", "رايق", "كفو", "بطل", "رهيب", "حلو", "ممتاز", "happy", "great", "nice"]
             neg_keywords = ["متضايق", "طفشان", "حزين", "زعلان", "تعبان", "قهر", "ضيق", "sad", "bad", "angry"]
 
-            # الحالة 1: إيجابي ✨
             if any(w in t for w in pos_keywords):
                 st.balloons()
                 st.success(f"ما شاء الله! النتيجة إيجابية جداً! كفو يا {prefix} {name}، دوم هالروقان ✨")
                 
-                # إعداد رسالة المشاركة
                 msg = f"أنا {prefix} {name}، حللت مشاعري في نظام حمد الذكي وطلعت النتيجة إيجابية! 🔥🚀"
                 encoded_msg = urllib.parse.quote(msg)
                 
                 st.markdown("### 📢 شارك النتيجة مع أخوياك:")
                 c1, c2, c3 = st.columns(3)
                 with c1:
-                    st.markdown(f'[![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/?text={encoded_msg})', unsafe_allow_html=True)
+                    st.markdown(f'[WhatsApp](https://wa.me/?text={encoded_msg})', unsafe_allow_html=True)
                 with c2:
-                    st.markdown(f'[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/share/url?url={encoded_msg}&text={encoded_msg})', unsafe_allow_html=True)
+                    st.markdown(f'[Telegram](https://t.me/share/url?url={encoded_msg}&text={encoded_msg})', unsafe_allow_html=True)
                 with c3:
-                    st.markdown(f'[![X](https://img.shields.io/badge/Twitter-000000?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/intent/tweet?text={encoded_msg})', unsafe_allow_html=True)
+                    st.markdown(f'[X](https://twitter.com/intent/tweet?text={encoded_msg})', unsafe_allow_html=True)
                 
                 st.markdown("---")
                 st.write("📸 **للمشاركة في سناب وتيك توك:**")
                 st.info("انسخ النص أدناه وانشره في قصتك (Story) ليراها الجميع:")
                 st.code(msg)
 
-            # الحالة 2: سلبي 💔
             elif any(w in t for w in neg_keywords):
                 st.error(f"أفا يا {prefix} {name}.. النتيجة فيها شوية ضيق. لا يهمك، خذ لك بريك وشف هالمقطع يغير جوك:")
                 st.video(random.choice(neg_videos))
             
-            # الحالة 3: متوازن ⚖️
             else:
                 st.warning(f"أهلاً {prefix} {name}، أنت الآن في حالة اتزان (المربع الذهبي).")
                 st.write("استمتع بهدوئك وتابع هذا المقطع:")
@@ -82,17 +74,17 @@ if st.button("تحليل النتيجة 🔍"):
     else:
         st.error("يا بطل، لازم تسجل اسمك وتكتب شي عشان أقدر أحلل شخصيتك!")
 
-# --- 5. قسم التواصل والاقتراحات (رابط انستقرام حمد) ---
+# --- 5. قسم التواصل والاقتراحات ---
 st.markdown("---")
 st.subheader("💡 عندك فكرة لتطوير النظام؟")
 st.write("يا مبدع، إذا عندك فكرة أو اقتراح تبي حمد يضيفه في التحديث الجاي، تواصل معه مباشرة:")
 
-# رابط حسابك الرسمي
 my_insta_url = "https://www.instagram.com/hamd_9367_?igsh=MTV6eHF5ZXdndGZ1dw=="
 
 st.markdown(f'''
-<a href="{my_insta_url}" target="_blank" style="text-decoration: none;">
+<a href="{my_insta_url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
     <div style="
+        background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
         background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
         color: white;
         padding: 15px 25px;
