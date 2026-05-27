@@ -67,9 +67,17 @@ if visitor_name:
                 advice = random.choice(["استمر في هذا الإبداع! 🚀", "يومك سعيد ومليء بالإنجازات 🌟", "طاقة إيجابية معدية، كفو! 🔥"])
                 st.markdown(f'<div class="positive-glow"><h3>النتيجة: إيجابي 😍 ✨</h3><p>{advice}</p></div>', unsafe_allow_html=True)
                 st.balloons()
+                        # --- منطق التصنيف الذكي (أولوية للكلمات العربية) ---
+            found_pos = any(word in user_input for word in pos_words)
+            found_neg = any(word in user_input for word in neg_words)
+
+            if found_pos or score > 0.1:
+                advice = random.choice(["استمر في هذا الإبداع! 🚀", "يومك سعيد ومليء بالإنجازات 🌟", "طاقة إيجابية معدية، كفو! 🔥"])
+                st.markdown(f'<div class="positive-glow"><h3>النتيجة: إيجابي 😍 ✨</h3><p>{advice}</p></div>', unsafe_allow_html=True)
+                st.balloons()
                 msg = f"جملتك إيجابية يا {visitor_name}. {advice}"
             
-            elif score < 0 or any(word in user_input for word in neg_words):
+            elif found_neg or score < -0.1:
                 advice = random.choice(["استغفر الله، وريح بالك.. 🤲", "قم اشرب فنجال قهوة وروّق ☕", "تذكر: (إن مع العسر يسراً) ✨", "وش رايك تتمشى شوي؟ 🚶‍♂️"])
                 st.markdown(f'<div class="negative-glow"><h3>النتيجة: سلبي 😔 💔</h3><p><b>نصيحة:</b> {advice}</p></div>', unsafe_allow_html=True)
                 msg = f"النتيجة سلبية يا {visitor_name}. نصيحتي لك: {advice}"
@@ -79,7 +87,7 @@ if visitor_name:
                 st.markdown(f'<div class="neutral-glow"><h3>النتيجة: محايد 😐</h3><p>{advice}</p></div>', unsafe_allow_html=True)
                 msg = f"هذه جملة محايدة يا {visitor_name}. {advice}"
 
-            # تشغيل الصوت وعرض الجدول
+            # --- الصوت والجدول (نهاية الكود) ---
             st.write("### 🔊 اسمع النتيجة:")
             speak(msg)
             
@@ -89,6 +97,8 @@ if visitor_name:
             st.warning("اكتب شيئاً أولاً!")
 else:
     st.info("سجل اسمك لبدء التجربة")
+
+
                 
 
 
