@@ -1,78 +1,84 @@
 import streamlit as st
-from textblob import TextBlob
 import urllib.parse
 import random
 
 # --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="تطبيق الشهير حمد", page_icon="🤖", layout="centered")
+st.set_page_config(page_title="نظام حمد الذكي", page_icon="🛡️", layout="centered")
 
-# --- 2. قوائم اليوتيوب (روابط جديدة ومضمونة التشغيل) ---
-neg_videos = [
-    "https://www.youtube.com/watch?v=2p8nreL_lTo", 
-    "https://www.youtube.com/watch?v=pY9InT15v70"
-]
-neu_videos = [
-    "https://www.youtube.com/watch?v=68pY7z-S2_Q",
-    "https://www.youtube.com/watch?v=07d2dXHYb94"
-]
+# --- 2. روابط اليوتيوب وقائمة الحماية ---
+bad_words = ["كلمة1", "كلمة2", "badword1"] 
+neg_videos = ["https://www.youtube.com/watch?v=2p8nreL_lTo", "https://www.youtube.com/watch?v=pY9InT15v70"]
+neu_videos = ["https://www.youtube.com/watch?v=68pY7z-S2_Q", "https://www.youtube.com/watch?v=07d2dXHYb94"]
 
-# --- 3. واجهة التطبيق ---
-st.title("🤖 تطبيق الشهير حمد لتحليل المشاعر")
+# --- 3. واجهة النظام الاحترافية ---
+st.title("🛡️ نظام حمد العالمي لتحليل المشاعر")
+st.write("النسخة الشاملة: عربي عامي + English 🌍")
 st.markdown("---")
 
-name = st.text_input("سجل اسمك الكريم:")
-gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
+name = st.text_input("سجل الاسم / Name:")
+gender = st.radio("الجنس / Gender:", ["ذكر / Male", "أنثى / Female"], horizontal=True)
+prefix = "الأستاذ" if "ذكر" in gender else "الأستاذة"
 
-# تخصيص اللقب
-prefix = "الشهير" if gender == "ذكر" else "الشهيرة"
+user_text = st.text_area(f"يا {prefix} {name}، عبر عن شعورك / Express your feelings:", height=150)
 
-user_text = st.text_area(f"يا {prefix} {name}، عبر عما في داخلك:", height=150)
-
-if st.button("إجراء التحليل الذكي 🔍"):
+if st.button("بدء التحليل / Analyze 🔍"):
     if name and user_text:
-        # عملية التحليل
-        blob = TextBlob(user_text)
-        score = blob.sentiment.polarity
+        t = user_text.lower()
         
-        # إحصائيات سريعة
-        words_count = len(user_text.split())
-        st.markdown(f"### 📊 تقرير التحليل لـ {prefix} {name}:")
-        st.write(f"عدد الكلمات التي حللها حمد: {words_count}")
-
-        # --- الحالة 1: الإيجابية (حساسية عالية للكلمات) ---
-        if score > 0.0:
-            st.balloons()
-            st.success(f"طاقتك إيجابية مذهلة يا {prefix} {name}! ✨")
-            msg = f"أنا {prefix} {name}، نتيجتي إيجابية في تطبيق 'الشهير حمد' 🔥! جربوا حظكم: https://sentiment-app-cncmahfqt2zhxibcsofljg.streamlit.app/"
-            whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
-            st.markdown(f'''<a href="{whatsapp_url}" target="_blank">
-                <button style="width:100%; background-color:#25D366; color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">
-                📢 شارك نتيجتك الإيجابية عبر واتساب
-                </button></a>''', unsafe_allow_html=True)
-
-        # --- الحالة 2: السلبية ---
-        elif score < 0.0:
-            st.error(f"وسع صدرك يا {prefix} {name}.. الدنيا ما تسوى.")
-            st.info("🎬 شاهد هذا المقطع ليغير مزاجك:")
-            st.video(random.choice(neg_videos))
-
-        # --- الحالة 3: المحايدة (المربع الذهبي) ---
+        # أولاً: نظام الحماية من الكلام السيء
+        if any(word in t for word in bad_words):
+            st.error("⚠️ تنبيه أمني: محتوى غير ملائم / Inappropriate content detected.")
         else:
-            st.warning(f"مزاجك اليوم متزن ورايق يا {prefix} {name} ⚖️")
-            st.markdown("""
-                <div style="background-color:rgba(255, 215, 0, 0.1); padding:20px; border-radius:15px; border:2px solid #ffd700; text-align:center;">
-                    <h4 style="color:#ffd700; margin:0;">🌟 ميزة الشخص المتزن:</h4>
-                    <p style="color:white; margin:10px 0;">بما أن عقلك في حالة هدوء وتركيز، اخترنا لك هذا المقطع الثقافي:</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.video(random.choice(neu_videos))
+            # ثانياً: قاموس حمد الذكي (عامي + فصحى + إنجليزي)
             
-    else:
-        st.error("لطفاً، اكتب اسمك وكلامك أولاً.")
+            # كلمات السعادة والرضا
+            pos_keywords = [
+                "سعيد", "فرحان", "مبسوط", "مستانس", "رايق", "كفو", "بطل", "خيال", "رهيب", "حلو", "جميل", "فخور", "ممتاز", "طيب",
+                "happy", "good", "great", "excellent", "amazing", "awesome", "nice", "proud", "love", "wonderful"
+            ]
+            
+            # كلمات الضيق والحزن
+            neg_keywords = [
+                "متضايق", "طفشان", "حزين", "زعلان", "تعبان", "قهر", "ضيق", "هم", "مخنوق", "سيء", "زفت", "كره", "بكي",
+                "sad", "bad", "angry", "upset", "tired", "hate", "depressed", "worst", "annoyed", "bored"
+            ]
 
-# --- التذييل ---
+            # فحص النتيجة
+            is_positive = any(word in t for word in pos_keywords)
+            is_negative = any(word in t for word in neg_keywords)
+
+            st.markdown(f"### 📋 تقرير الحالة لـ {prefix} {name}:")
+
+            if is_positive:
+                st.balloons()
+                st.success("النتيجة: مشاعر إيجابية / Positive Feelings ✨")
+                msg = f"أنا {prefix} {name}، حللت مشاعري عند 'نظام حمد الذكي' وطلعت نتيجتي إيجابية! 🔥"
+                whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
+                st.markdown(f'''<a href="{whatsapp_url}" target="_blank">
+                    <button style="width:100%; background-color:#25D366; color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">
+                    📢 مشاركة التقرير عبر WhatsApp
+                    </button></a>''', unsafe_allow_html=True)
+
+            elif is_negative:
+                st.error("النتيجة: مشاعر سلبية أو ضيق / Negative Feelings.")
+                st.info("نصيحة من حمد: لا تحزن، شاهد هذا المقطع المختار لك:")
+                st.video(random.choice(neg_videos))
+
+            else:
+                st.warning("النتيجة: حالة ذهنية متزنة / Neutral State ⚖️")
+                st.markdown("""
+                    <div style="border:2px solid #ffd700; padding:20px; border-radius:15px; text-align:center; background-color:rgba(255,215,0,0.1);">
+                        <h4 style="color:#ffd700; margin:0;">💎 المربع الذهبي</h4>
+                        <p style="color:white; margin-top:10px;">أنت الآن في قمة الصفاء والهدوء الذهني.</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                st.video(random.choice(neu_videos))
+    else:
+        st.error("الرجاء إدخال الاسم والنص / Please enter name and text.")
+
 st.markdown("---")
-st.markdown(f"<center>تم التطوير بكل فخر بواسطة <b>الشهير حمد</b> | 2026</center>", unsafe_allow_html=True)
+st.markdown(f"<center>تم التطوير بواسطة الخبير <b>حمد</b> | Developed by <b>Hamad</b> 2026</center>", unsafe_allow_html=True)
+
 
 
 
