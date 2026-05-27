@@ -1,122 +1,115 @@
 import streamlit as st
 import urllib.parse
 import random
+import time
+from datetime import datetime
 
-# --- 1. إعدادات الصفحة الأساسية ---
-st.set_page_config(page_title="نظام حمد الذكي 2026", page_icon="🛡️")
+# --- 1. إعدادات الصفحة الفخمة ---
+st.set_page_config(page_title="نظام حمد العالمي 2026", page_icon="🛡️", layout="wide")
 
-# --- 2. قاعدة البيانات ---
-bad_words = ["كلمة1", "كلمة2", "كلمة3"] 
+# تخصيص CSS متقدم (خلفية متدرجة وتأثيرات للأزرار)
+st.markdown("""
+    <style>
+    .main {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    .stButton>button {
+        background: linear-gradient(to right, #1E3A8A, #3B82F6);
+        color: white;
+        border-radius: 25px;
+        border: none;
+        padding: 15px 30px;
+        font-size: 20px;
+        transition: 0.5s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .stButton>button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-neg_videos = [
-    "https://www.youtube.com/watch?v=2p8nreL_lTo", 
-    "https://www.youtube.com/watch?v=pY9InT15v70"
-]
-neu_videos = [
-    "https://www.youtube.com/watch?v=68pY7z-S2_Q", 
-    "https://www.youtube.com/watch?v=07d2dXHYb94"
-]
+# --- 2. عداد الزيارات الوهمي (للهيبة) ---
+if 'visits' not in st.session_state:
+    st.session_state.visits = random.randint(15400, 16000)
+else:
+    st.session_state.visits += 1
 
-# --- 3. تصميم واجهة التطبيق ---
-st.title("🛡️ نظام حمد العالمي للتحليل")
-st.write("مرحباً بك في النسخة المطورة من نظام التحليل النفسي والذكاء الاصطناعي.")
+# --- 3. واجهة التطبيق ---
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100) # أيقونة تعبيرية
+with col2:
+    st.title("🛡️ نظام حمد العالمي للتحليل الذكي")
+    st.write(f"👥 عدد المستفيدين من النظام حتى الآن: **{st.session_state.visits:,}** بطل وبطلة")
+
 st.markdown("---")
 
-# إدخال بيانات المستخدم
-name = st.text_input("سجل اسمك الكريم:")
-gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
+# إدخال البيانات
+c1, c2 = st.columns(2)
+with c1:
+    name = st.text_input("سجل اسمك الكريم:", placeholder="مثلاً: حمد")
+with c2:
+    gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-# التعديل حق الاسم
+# منطق حمد الذكي للاسم
 display_name = name.strip() if name.strip() else "يا بطل"
 prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
-user_text = st.text_area(f"{prefix} {display_name}، وش شعورك اليوم؟ صف لنا حالتك..", height=150)
 
-# --- 4. منطق التحليل والمعالجة ---
-if st.button("تحليل النتيجة 🔍"):
+user_text = st.text_area(f"يا {prefix} {display_name}، وش شعورك اليوم؟", 
+                         placeholder="اكتب شعورك هنا بكل صراحة.. نظام حمد يسمعك 🎤")
+
+# --- 4. التحليل مع تأثير "خوارزميات حمد" ---
+if st.button("بدء التحليل الذكي 🚀"):
     if name and user_text:
-        t = user_text.lower()
-        
-        if any(word in t for word in bad_words):
-            st.error("⚠️ عذراً يا بطل، النص يحتوي على كلمات غير ملائمة. فضلاً اجعل كلامك راقياً مثلك.")
-        else:
-            pos_keywords = ["سعيد", "مستانس", "رايق", "كفو", "بطل", "رهيب", "حلو", "ممتاز", "happy", "great", "nice"]
-            neg_keywords = ["متضايق", "طفشان", "حزين", "زعلان", "تعبان", "قهر", "ضيق", "sad", "bad", "angry"]
-
-            if any(w in t for w in pos_keywords):
-                st.balloons()
-                st.success(f"ما شاء الله! النتيجة إيجابية جداً! كفو يا {prefix} {name}، دوم هالروقان ✨")
-                
-                msg = f"أنا {prefix} {name}، حللت مشاعري في نظام حمد الذكي وطلعت النتيجة إيجابية! 🔥🚀"
-                encoded_msg = urllib.parse.quote(msg)
-                
-                st.markdown("### 📢 شارك النتيجة مع أخوياك:")
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    st.markdown(f'[WhatsApp](https://wa.me/?text={encoded_msg})', unsafe_allow_html=True)
-                with c2:
-                    st.markdown(f'[Telegram](https://t.me/share/url?url={encoded_msg}&text={encoded_msg})', unsafe_allow_html=True)
-                with c3:
-                    st.markdown(f'[X](https://twitter.com/intent/tweet?text={encoded_msg})', unsafe_allow_html=True)
-                
-                st.markdown("---")
-                st.write("📸 **للمشاركة في سناب وتيك توك:**")
-                st.info("انسخ النص أدناه وانشره في قصتك (Story) ليراها الجميع:")
-                st.code(msg)
-
-            elif any(w in t for w in neg_keywords):
-                st.error(f"أفا يا {prefix} {name}.. النتيجة فيها شوية ضيق. لا يهمك، خذ لك بريك وشف هالمقطع يغير جوك:")
-                st.video(random.choice(neg_videos))
+        with st.spinner('⏳ جاري استشارة خوارزميات حمد العالمية...'):
+            time.sleep(2) # تأخير بسيط ليعطي إيحاء بالتفكير
             
-            else:
-                st.warning(f"أهلاً {prefix} {name}، أنت الآن في حالة اتزان (المربع الذهبي).")
-                st.write("استمتع بهدوئك وتابع هذا المقطع:")
-                st.video(random.choice(neu_videos))
+        t = user_text.lower()
+        pos_keywords = ["سعيد", "مستانس", "رايق", "كفو", "بطل", "رهيب", "حلو", "ممتاز", "فخم"]
+        neg_keywords = ["متضايق", "طفشان", "حزين", "زعلان", "تعبان", "قهر", "ضيق"]
+
+        if any(w in t for w in pos_keywords):
+            st.balloons()
+            st.success(f"🎊 النتيجة: **طاقة إيجابية متفجرة!** أنت اليوم في قمة العطاء يا {prefix} {display_name}.")
+            msg = f"تحليل مشاعري في نظام حمد الذكي: إيجابي 100% 🔥🚀"
+            
+            # أزرار مشاركة فخمة
+            st.markdown(f"### 📢 بشر أخوياك بالنتيجة:")
+            st.markdown(f'''
+                <a href="https://wa.me/?text={urllib.parse.quote(msg)}" target="_blank" style="text-decoration:none">
+                    <button style="background-color:#25D366; color:white; border-radius:10px; padding:10px; border:none; cursor:pointer;">🟢 واتساب</button>
+                </a>
+                <a href="https://t.me/share/url?url={urllib.parse.quote(msg)}" target="_blank" style="text-decoration:none">
+                    <button style="background-color:#24A1DE; color:white; border-radius:10px; padding:10px; border:none; cursor:pointer;">🔵 تليجرام</button>
+                </a>
+            ''', unsafe_allow_html=True)
+            st.code(msg)
+
+        elif any(w in t for w in neg_keywords):
+            st.warning(f"يا {prefix} {display_name}، الحياة تجارب.. خذ لك بريك وشف هالشي:")
+            st.video("https://www.youtube.com/watch?v=2p8nreL_lTo")
+        else:
+            st.info("حالة اتزان (المربع الذهبي) ⚖️ أنت في وضعية الحكيم الآن.")
+            st.video("https://www.youtube.com/watch?v=68pY7z-S2_Q")
     else:
-        st.error("يا بطل، لازم تسجل اسمك وتكتب شي عشان أقدر أحلل شخصيتك!")
+        st.error("يا بطل، سجل اسمك واكتب شعورك أولاً!")
 
-# --- 5. قسم التواصل والاقتراحات ---
-st.markdown("---")
-st.subheader("💡 عندك فكرة لتطوير النظام؟")
-st.write("يا مبدع، إذا عندك فكرة أو اقتراح تبي حمد يضيفه في التحديث الجاي، تواصل معه مباشرة:")
-
-my_insta_url = "https://www.instagram.com/hamd_9367_?igsh=MTV6eHF5ZXdndGZ1dw=="
-
+# --- 5. صندوق الاقتراحات (انستقرام حمد) ---
+st.markdown("<br><br>", unsafe_allow_html=True)
+my_insta = "https://www.instagram.com/hamd_9367_?igsh=MTV6eHF5ZXdndGZ1dw=="
 st.markdown(f'''
-<a href="{my_insta_url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-    <div style="
-        background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
-        background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 12px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 18px;
-        box-shadow: 2px 4px 15px rgba(0,0,0,0.2);
-        transition: 0.3s;">
-        📸 أرسل فكرتك لحمد عبر انستقرام
+    <div style="background-color: white; padding: 20px; border-radius: 15px; border-left: 5px solid #E1306C; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <h4>💡 هل لديك فكرة لتطوير النظام؟</h4>
+        <p>مطور النظام "حمد" يرحب بكل اقتراحاتكم الإبداعية.</p>
+        <a href="{my_insta}" target="_blank" style="text-decoration: none;">
+            <button style="background: linear-gradient(45deg, #f09433, #bc1888); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">
+                📸 أرسل اقتراحك الآن
+            </button>
+        </a>
     </div>
-</a>
 ''', unsafe_allow_html=True)
 
-# --- 6. تذييل الصفحة ---
-st.markdown("---")
-st.markdown(f"<center>تمت البرمجة بواسطة الخبير <b>حمد</b> | الإصدار 2.0 - 2026</center>", unsafe_allow_html=True)
-
-    
-
-
-
-
-    
-
-
-
-                
-
-
-
-        
-
-
-      
+st.markdown(f"<br><center>حقوق البرمجة محفوظة للمطور <b>حمد</b> © 2026</center>", unsafe_allow_html=True)
+                         
