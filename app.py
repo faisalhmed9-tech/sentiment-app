@@ -5,16 +5,12 @@ import time
 # --- 1. إعدادات الصفحة ---
 st.set_page_config(page_title="نظام حمد الذكي 2026", page_icon="🛡️", layout="wide")
 
-# تعريف العداد في ذاكرة "السيرفر" المؤقتة
+# العداد: بنخليه يبدأ من رقمك المفضل ويزيد فعلياً
 if 'real_counter' not in st.session_state:
     st.session_state.real_counter = 16989 
 
-# خاصية لمنع التكرار لنفس الشخص
-if 'has_counted' not in st.session_state:
-    st.session_state.has_counted = False
-
-# الوضع الليلي
-mode = st.sidebar.toggle("🌙 الوضع الليلي", value=False)
+# الوضع الليلي والنهاري
+mode = st.sidebar.toggle("🌙 الوضع الليلي", value=True)
 if mode:
     bg, text_c, card_bg = "linear-gradient(135deg, #0f2027, #2c5364)", "white", "rgba(255,255,255,0.1)"
 else:
@@ -25,11 +21,11 @@ st.markdown(f"""
     .main {{ background: {bg}; color: {text_c}; }}
     .stButton>button {{
         background: linear-gradient(to right, #1E3A8A, #3B82F6);
-        color: white; border-radius: 25px; padding: 15px 30px; font-size: 20px;
+        color: white; border-radius: 25px; padding: 15px 30px; font-size: 20px; width: 100%;
     }}
     .result-card {{
         background-color: {card_bg}; padding: 25px; border-radius: 15px;
-        border: 2px solid #3B82F6; margin-top: 20px;
+        border: 2px solid #3B82F6; margin-top: 20px; color: {text_c};
     }}
     .counter-box {{
         background: #1E3A8A; color: white; padding: 10px; border-radius: 10px; text-align: center; font-size: 18px; margin-bottom: 20px;
@@ -39,57 +35,73 @@ st.markdown(f"""
 
 # --- 2. الواجهة ---
 st.title("🛡️ نظام حمد العالمي للتحليل")
-
-# عرض العداد
-st.markdown(f'<div class="counter-box">👥 عدد المشاركين الحقيقي: {st.session_state.real_counter}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="counter-box">👥 عدد المستفيدين الفعلي: {st.session_state.real_counter}</div>', unsafe_allow_html=True)
 
 c1, c2 = st.columns(2)
 with c1:
-    name = st.text_input("سجل اسمك يا بطل:", placeholder="حمد")
+    name = st.text_input("سجل اسمك:", placeholder="حمد")
 with c2:
     gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-user_text = st.text_area("فضفض لنظام حمد.. وش في خاطرك؟")
+user_text = st.text_area("وش شعورك الحين؟ (فضفض بالتفصيل)")
 
+# اللقب والاسم
 prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
-display_name = name.strip() if name.strip() else "يا وحش"
+display_name = name.strip() if name.strip() else "يا بطل"
 
-# --- 3. المنطق الذكي ---
+# --- 3. المنطق البرمجي (المعدل والمضمون) ---
 if st.button("بدء التحليل الذكي 🚀"):
     if name and user_text:
-        # الزيادة تحصل فقط مرة واحدة لكل دخول للموقع
-        if not st.session_state.has_counted:
-            st.session_state.real_counter += 1
-            st.session_state.has_counted = True
+        # تحديث العداد
+        st.session_state.real_counter += 1
         
-        with st.spinner('⏳ خوارزميات حمد تفحص كلامك...'):
+        with st.spinner('⏳ خوارزميات حمد تحلل مشاعرك...'):
             time.sleep(1)
         
-        t = user_text.lower().strip()
+        t = user_text.strip()
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
+
+        # --- ترتيب الشروط عشان ما يغلط النظام ---
         
-        # --- ركن الردود ---
-        if any(w in t for w in ["جوعان", "جوع", "اكل"]):
-            st.warning(f"🍔 يا {prefix} {display_name}، نظام حمد مو هنقرستيشن! اطلب وتعال.")
-        elif any(w in t for w in ["بنام", "نوم", "تعبان"]):
-            st.info(f"😴 شكل السهر أثر عليك.. رح نم والوعد بكره.")
-        elif "احبك" in t or "أحبك" in t:
-            st.error(f"❤️ أدري إني فخم، بس خلينا أصدقاء يا {prefix} {display_name}!")
-        elif any(w in t for w in ["حزين", "متضايق", "ضيق", "مهموم"]):
-            st.subheader(f"✨ رسالة قوة")
-            st.info(f"💡 يا {prefix} {display_name}، الحزن محطة وقود.. أنت أقوى مما تظن!")
+        # 1. كلمات الحزن (زعلان، حزين، متضايق)
+        sad_words = ["زعلان", "حزين", "متضايق", "تعبان", "ابكي", "خنقه", "ضيق"]
+        # 2. كلمات السعادة (سعيد، مستانس، رايق)
+        happy_words = ["سعيد", "مستانس", "رايق", "فرحان", "كفو", "حلو", "بطل"]
+        # 3. الشطحات
+        shathat = ["جوعان", "اكل", "بنام", "نوم", "احبك"]
+
+        if any(word in t for word in sad_words):
+            st.subheader(f"✨ رسالة قوة يا {prefix} {display_name}")
+            st.info("💡 **تحليل حمد:** الضيق مجرد غمامة وتعدي. أنت أقوى من هذا الشعور بمليون مرة، اضحك وخل الهم يولي!")
             st.balloons()
-        elif any(w in t for w in ["سعيد", "مستانس", "رايق", "حلو"]):
+
+        elif any(word in t for word in happy_words):
+            st.subheader(f"🔥 طاقة إيجابية يا {prefix} {display_name}")
+            st.success("كفووو! السعادة تليق بك، استمر في نشر هذي الطاقة وعيش لحظتك يا وحش!")
             st.balloons()
-            st.success(f"🔥 كفو! طاقة الإبداع عندك توب يا {prefix} {display_name}.")
+
+        elif any(word in t for word in shathat):
+            if "اكل" in t or "جوع" in t:
+                st.warning(f"🍔 يا {display_name}، اترك التحليل وروح اطلب لك وجبة دسمة وتعال!")
+            elif "نوم" in t or "بنام" in t:
+                st.info(f"😴 شكل النوم غلبك.. مسموح تروح تنام ونكمل بكره.")
+            else:
+                st.error(f"❤️ أحبك الله الذي أحببتنا فيه يا {display_name}، خلك في التحليل!")
+
         else:
-            questions = ["وش الشيء اللي لو سويته اليوم بيخليك فخور بنفسك؟", "لو معك تذكرة سفر الحين، وين تبي تروح؟"]
-            st.subheader(f"⚖️ منطقة التفاعل")
-            st.write(f"أهلاً {prefix} {display_name}، كلامك متزن.. جاوبني:")
-            st.info(f"❓ {random.choice(questions)}")
+            # منطقة المحايد (إذا ما لقى كلمات حزن أو فرح)
+            questions = [
+                "وش أكثر شيء سويته اليوم وخلاك تبتسم؟",
+                "لو طلبنا منك نصيحة لـ 'حمد'، وش بتقول له؟",
+                "وش هدفك اللي بتوصل له هذي السنة؟"
+            ]
+            st.subheader(f"⚖️ منطقة التفاعل الذكي")
+            st.write(f"أهلاً {prefix} {display_name}، كلامك غامض شوي.. وش رايك تجاوب على سؤالي:")
+            st.warning(f"❓ {random.choice(questions)}")
+            st.write("*(اكتب إجابتك فوق واضغط تحليل مرة ثانية)*")
             
         st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.error("سجل اسمك وكلامك أولاً!")
+        st.error("يا بطل، لازم تكتب اسمك وشعورك أول شيء!")
 
 st.markdown(f"<br><center>برمجة <b>حمد</b> © 2026</center>", unsafe_allow_html=True)
