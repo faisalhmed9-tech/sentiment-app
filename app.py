@@ -20,14 +20,14 @@ st.markdown("""
     }
     .share-btn {
         background-color: #25D366; color: white; padding: 10px 20px; 
-        border-radius: 15px; text-decoration: none; display: inline-block; margin-top: 10px;
+        border-radius: 15px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
 
 # --- 2. الواجهة الرئيسية ---
 st.title("🛡️ نظام حمد العالمي للتحليل الذكي")
-st.write("حلل مشاعرك وشارك قوتك مع الأصدقاء والأقوياء! 🔥")
+st.write("النسخة الكاملة: تحليل | شطحات | مشاركة | طاقة إيجابية")
 
 c1, c2 = st.columns(2)
 with c1:
@@ -35,69 +35,67 @@ with c1:
 with c2:
     gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-user_text = st.text_area("وش شعورك الحين؟ (فضفض بالتفصيل عشان نحللك صح)")
+user_text = st.text_area("وش يدور في خاطرك؟ فضفض (نظام حمد يسمعك)")
 
-# إعدادات اللقب والاسم
+# إعدادات اللقب
 prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
 display_name = name.strip() if name.strip() else "يا بطل"
 
-# --- 3. المنطق البرمجي والتحليل ---
+# --- 3. المنطق البرمجي (التحليل الشامل) ---
 if st.button("بدء التحليل وإطلاق القوة 🚀"):
     if name and user_text:
-        with st.spinner('⏳ جاري استخراج الطاقة وتحليل البيانات...'):
-            time.sleep(1.2)
+        with st.spinner('⏳ خوارزميات حمد تستخرج الطاقة...'):
+            time.sleep(1)
         
         t = user_text.lower().strip()
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
-        # قوائم الكلمات (دقة عالية)
+        # قوائم الكلمات
         sad_list = ["زعلان", "حزين", "ضيق", "تعبان", "متضايق", "مهموم", "مخلوق", "تبكي"]
         happy_list = ["سعيد", "مستانس", "رايق", "فرحان", "كفو", "بطل", "ممتاز", "قوي", "متفائل"]
-        shathat = ["جوعان", "اكل", "أكل", "نوم", "بنام", "احبك", "أحبك"]
+        
+        # --- ركن الشطحات (الكلمات الشاطحة) ---
+        is_shatha = False
+        if any(w in t for w in ["جوعان", "جوع", "اكل", "أكل"]):
+            st.warning(f"🍔 يا {display_name}، نظام حمد مو مطعم! روح اشبع وتعال نحلل صح.")
+            is_shatha = True
+        elif any(w in t for w in ["نوم", "بنام", "نعسان", "تعب"]):
+            st.info(f"😴 شكل السهر مأثر عليك يا {prefix} {display_name}.. روح ارتاح، النوم سلطان.")
+            is_shatha = True
+        elif any(w in t for w in ["احبك", "أحبك", "عشق"]):
+            st.error(f"❤️ حبتك العافية يا {display_name}! بس خلك رزين، إحنا هنا للتحليل بس.")
+            is_shatha = True
 
-        # النتيجة النهائية (لحفظها في رابط المشاركة)
-        final_result = ""
+        # --- ركن التحليل (إذا ما كانت شطحة) ---
+        if not is_shatha:
+            final_result = ""
+            
+            if any(word in t for word in sad_list):
+                st.subheader(f"🛡️ رسالة دعم لـ {prefix} {display_name}")
+                st.info("💡 **تحليل حمد:** الزعل ما يليق فيك. أنت أقوى من الظروف، اضحك وخل الهم لغيرك!")
+                st.balloons()
+                final_result = f"أنا {prefix} {display_name}، نظام حمد عطاني جرعة قوة اليوم! 💪"
 
-        # أولاً: فحص الحزن
-        if any(word in t for word in sad_list):
-            final_result = f"أنا {prefix} {display_name}، نظام حمد حلل مشاعري ولقى إني أحتاج طاقة، وعطاني رسالة قوة!"
-            st.subheader(f"🛡️ دعم خاص من حمد لـ {prefix} {display_name}")
-            st.info("💡 **تحليل حمد:** الضيق مجرد غمامة وتعدي. أنت جبل ما يهزه ريح! خذ لك راحة وارجع أقوى، الدنيا ما تسوى زعلك.")
-            st.balloons()
+            elif any(word in t for word in happy_list):
+                st.subheader(f"🔥 طاقة إيجابية خارقة لـ {prefix} {display_name}")
+                st.success("ما شاء الله! طاقتك في السماء. استمر في الإبداع يا وحش!")
+                st.balloons()
+                final_result = f"أنا {prefix} {display_name}، طاقتي الإيجابية فولي في نظام حمد! 🔥"
 
-        # ثانياً: فحص السعادة والقوة الإيجابية (الأقوياء)
-        elif any(word in t for word in happy_list):
-            final_result = f"أنا {prefix} {display_name}، حللت في نظام حمد وطلعت طاقتي الإيجابية فولي! 🔥"
-            st.subheader(f"🔥 طاقة إيجابية خارقة لـ {prefix} {display_name}")
-            st.success("يا سلام! السعادة والقوة تليق بك. أنت الآن في قمة عطائك، انشر هذي الطاقة حولك يا وحش!")
-            st.balloons()
-
-        # ثالثاً: الشطحات
-        elif any(word in t for word in shathat):
-            if "اكل" in t or "جوع" in t:
-                st.warning("🍔 اترك التحليل وروح اشبع أول يا بطل!")
-            elif "نوم" in t or "بنام" in t:
-                st.info("😴 شكل السهر مأثر عليك.. روح ارتاح ونكمل بكره.")
             else:
-                st.error("❤️ حبتك العافية! خلك في التحليل الحين.")
+                st.subheader(f"⚖️ وضع الاستقرار")
+                st.write(f"أهلاً {prefix} {display_name}.. كلامك هادي ومتزن. جرب تفضفض أكثر!")
+                final_result = f"أنا {prefix} {display_name}، جربت نظام حمد ووضعي مستقر ⚖️"
 
-        # رابعاً: المحايد
-        else:
-            final_result = f"أنا {prefix} {display_name}، جربت نظام حمد العالمي للتحليل، وضعك مستقر وهادي!"
-            st.subheader(f"⚖️ وضع الاستقرار الذهبي")
-            st.write(f"أهلاً {prefix} {display_name}.. كلامك متزن. جرب تفضفض أكثر عشان نطلع القوة اللي داخلك.")
-
-        # --- 4. ميزة المشاركة للأصدقاء ---
-        if final_result:
+            # --- 4. ميزة المشاركة للأصدقاء والأقوياء ---
             st.markdown("---")
-            st.write("✨ **شارك نتيجتك مع الأقوياء والأصدقاء:**")
-            share_msg = urllib.parse.quote(final_result + " \nجرب حظك هنا: https://fljg.streamlit.app")
+            st.write("✨ **أرسلها للأصدقاء والأقوياء:**")
+            share_msg = urllib.parse.quote(final_result + " \nحلل مشاعرك هنا: https://fljg.streamlit.app")
             whatsapp_url = f"https://api.whatsapp.com/send?text={share_msg}"
             st.markdown(f'<a href="{whatsapp_url}" target="_blank" class="share-btn">📲 مشاركة عبر واتساب</a>', unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.error("يا حمد، سجل اسمك واكتب شعورك أول عشان تطلع النتيجة!")
+        st.error("يا حمد، سجل اسمك واكتب شعورك أول!")
 
 st.markdown(f"<br><center>برمجة <b>حمد</b> © 2026</center>", unsafe_allow_html=True)
-        
