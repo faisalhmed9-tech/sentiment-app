@@ -1,85 +1,84 @@
 import streamlit as st
 import random
 import time
-import urllib.parse
 
-# --- 1. إعدادات الصفحة ---
+# --- 1. إعدادات وتصميم الصفحة ---
 st.set_page_config(page_title="نظام حمد الذكي", layout="centered")
 
-# --- 2. التصميم (نفس اللي بالصور) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
     html, body, [class*="st-"] { font-family: 'Tajawal', sans-serif; direction: rtl; text-align: right; }
     .stButton>button {
         width: 100%; border-radius: 15px; font-weight: bold;
-        background: linear-gradient(90deg, #4CAF50, #2196F3);
-        color: white; border: none; padding: 12px; font-size: 18px;
+        background: linear-gradient(90deg, #FF4B2B, #FF416C);
+        color: white; border: none; padding: 15px; font-size: 18px;
     }
-    .result-box { padding: 25px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: white; text-align: center; }
+    .result-box { padding: 30px; border-radius: 20px; margin-top: 25px; color: white; text-align: center; font-size: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. محرك التحليل (الكلمات الشاطحة + الردود المتغيرة) ---
-def analyze_mood(text, name):
+# --- 2. محرك التحليل الشاطح (حب، جوع، تعب، قوة) ---
+def analyze_mood_shateh(text, name):
     text = text.lower()
     
-    # الكلمات العامية الشاطحة
-    neg_keys = ["زعلان", "ضايق", "طفشان", "زهقان", "تعبان", "مالي خلق", "منغث", "مغلق", "نفسية"]
-    pos_keys = ["مبسوط", "مستانس", "فرحان", "مروق", "وناسة", "كفو", "منتعش", "طاير"]
-    neu_keys = ["عادي", "تمام", "طيب", "ماشي", "نص نص"]
+    # 1. قسم الحب ️❤️
+    love_keys = ["أحبك", "يا بعدي", "حب", "أعشقك", "غالي", "يا روحي"]
+    love_replies = [f"يا بعد قلبي يا {name}، المحبة متبادلة والله!", f"يا {name} جعل ما يحب غيرك إلا السعادة والهنا.", f"قلبك أبيض يا {name}، وتستاهل كل الحب!"]
 
-    # منطق الردود باستخدام الاسم المدخل {name}
-    if any(word in text for word in neg_keys):
-        replies = [f"أفا يا {name}! الضيقة ما تدوم وبكرا أجمل.", f"لا يضيق صدرك يا {name}، فضفض وطلع اللي بقلبك."]
-        return "سلبي", "#F44336", random.choice(replies)
-    
+    # 2. قسم الجوع 🍔
+    hunger_keys = ["جوعان", "أبي أكل", "جعت", "ميت جوع", "وش العشا"]
+    hunger_replies = [f"يا {name} الجوع كافر، قم اضرب بالخمس وخل عنك التحليل!", f"عوافي مقدماً يا {name}، لا تنسى تعزمنا على هالوجبة.", f"يا {name} من جاع هان، قم دور لك أقرب مطعم وضبط وضعك."]
+
+    # 3. قسم التعب 😫
+    tired_keys = ["تعبان", "مرهق", "مهلوك", "أبي أنام", "دايخ"]
+    tired_replies = [f"سلامة قلبك يا {name}، ريح جسمك النوم سلطان.", f"يا {name} لا تضغط على نفسك، خذ لك بريك وشاهي وبتزين.", f"الراحة مطلوبة يا {name}، تعبك هذا دليل إنك بذلت جهد بطل."]
+
+    # 4. قسم القوة 🔥
+    power_keys = ["قوي", "وحش", "كفو", "أقدر", "عزيمة", "إصرار"]
+    power_replies = [f"كفو يا {name}! إنت قدها وقدود، وحش والله.", f"هذي العزيمة اللي نعرفها فيك يا {name}، استمر يا بطل!", f"يا {name} قوتك هذي تلهم اللي حولك، لا تتراجع."]
+
+    # 5. الحالات العادية
+    pos_keys = ["مستانس", "مروق", "وناسة"]
+    neg_keys = ["ضايق", "طفشان", "منغث"]
+
+    # منطق الفحص والاختيار
+    if any(word in text for word in love_keys):
+        return "#FF4B2B", random.choice(love_replies)
+    elif any(word in text for word in hunger_keys):
+        return "#FFA500", random.choice(hunger_replies)
+    elif any(word in text for word in tired_keys):
+        return "#607D8B", random.choice(tired_replies)
+    elif any(word in text for word in power_keys):
+        return "#4CAF50", random.choice(power_replies)
     elif any(word in text for word in pos_keys):
-        replies = [f"يا سلام على الروقان يا {name}! عسى هالوناسة دوم.", f"كفو يا {name}! طاقة إيجابية تشرح الصدر."]
-        return "إيجابي", "#4CAF50", random.choice(replies)
-    
-    elif any(word in text for word in neu_keys):
-        replies = [f"يوم هادي ومستقر يا {name}، الاستقرار نعمة.", f"ماشي الحال يا {name}، أهم شي راحتك."]
-        return "محايد", "#607D8B", random.choice(replies)
-    
+        return "#FFD700", f"دوم هالوناسة يا {name}!"
+    elif any(word in text for word in neg_keys):
+        return "#000000", f"أفا يا {name}، فضفض لي أنا أسمعك."
     else:
-        return "غير محدد", "#2196F3", f"كلامك كبير يا {name}، الأهم إنك تكون بخير دائماً."
+        return "#2196F3", f"منور يا {name}، كلامك له هيبة مثلك."
 
-# --- 4. واجهة التطبيق ---
-st.title("🤖 نظام حمد الذكي")
-st.write("وش يدور في خاطرك: فضفض وسوف يتم تحليلك!")
+# --- 3. الواجهة ---
+st.title("🛡️ نظام حمد الذكي (النسخة الشاطحة)")
+st.write("اختبرني في الحب، الجوع، التعب، أو القوة.. وشوف الردود!")
 
-col1, col2 = st.columns(2)
-with col1:
-    test_name = st.text_input("سجل اسمك:", placeholder="اكتب اسمك هنا")
-with col2:
-    gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
+input_name = st.text_input("سجل اسمك للاختبار:", placeholder="مثلاً: حمد")
+user_input = st.text_area("وش بخاطرك الحين؟ (شطّح بالكلام عادي):")
 
-u_input = st.text_area("اكتب شعورك هنا (بالعامية):")
-
-if st.button("بدء التحليل وإطلاق القوة 🚀"):
-    if not test_name.strip() or not u_input.strip():
-        st.warning("سجل بياناتك كاملة يا بطل!")
+if st.button("إطلاق التحليل الذكي 🚀"):
+    if not input_name.strip() or not user_input.strip():
+        st.warning("يا بطل سجل اسمك وكلامك أول!")
     else:
-        with st.spinner("جاري التحليل..."):
+        with st.spinner("جاري فك الشفرة الشاطحة..."):
             time.sleep(1)
         
-        m_type, color, reply = analyze_mood(u_input, test_name)
-        prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
+        color, reply = analyze_mood_shateh(user_input, input_name)
         
-        # عرض النتيجة
         st.markdown(f"""
         <div class="result-box" style="background:{color};">
-            <h2 style="color:white; margin:0;">النتيجة يا {prefix} {test_name}</h2>
-            <hr style="border:0.5px solid rgba(255,255,255,0.2); margin: 15px 0;">
-            <p style="font-size: 22px; font-weight: bold; margin:0;">{reply}</p>
+            <p style="font-weight: bold; margin:0;">{reply}</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # زر الواتساب المضمون (بدون أخطاء f-string)
-        msg = urllib.parse.quote(f"تحليل مزاجي من نظام حمد الذكي: {reply}")
-        whatsapp_url = f"https://wa.me/?text={msg}"
-        st.markdown(f'<a href="{whatsapp_url}" target="_blank" style="text-decoration:none;"><button style="margin-top:15px; width:100%; background:#25D366; color:white; border-radius:15px; padding:12px; border:none; font-weight:bold; cursor:pointer;">📤 شارك النتيجة على واتساب</button></a>', unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption(f"صنع بـ ❤️ بواسطة حمد | 2026")
