@@ -6,7 +6,7 @@ import urllib.parse
 # --- 1. إعدادات الصفحة ---
 st.set_page_config(page_title="نظام حمد الذكي", layout="centered", initial_sidebar_state="collapsed")
 
-# --- 2. CSS الأصلي (نفس اللي بالصورة) ---
+# --- 2. التصميم (CSS) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
@@ -34,28 +34,49 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. محرك التحليل (الكلمات العامية اللي طلبتها) ---
+# --- 3. محرك التحليل الذكي (عامي + ردود متنوعة) ---
 def analyze_mood(text):
     text = text.lower()
     
-    # تصنيف الكلمات (عامي وفصحى)
-    negative = ["زعلان", "ضايق", "طفشان", "زهقان", "مهموم", "تعبان", "مالي خلق", "منغث", "حزين"]
-    positive = ["مبسوط", "مستانس", "فرحان", "مروق", "وناسة", "الحمدلله", "راضي"]
-    neutral = ["عادي", "تمام", "طيب", "ماشي"]
+    # 🔴 كلمات سلبية عامية (زهقان، منغث، مالي خلق...)
+    negative_keys = ["زعلان", "ضايق", "طفشان", "زهقان", "تعبان", "مالي خلق", "منغث", "مغبون", "حزين", "متنكد"]
+    # 🟢 كلمات إيجابية عامية (مروق، مستانس، وناسة...)
+    positive_keys = ["مبسوط", "مستانس", "فرحان", "مروق", "وناسة", "الحمدلله", "كفو", "راضي", "منتعش"]
+    # 🟡 كلمات محايدة عامية (عادي، ماشي الحال، نص نص...)
+    neutral_keys = ["عادي", "تمام", "طيب", "ماشي", "نص نص", "ماشي الحال"]
 
-    if any(word in text for word in negative):
-        return "سلبي", "#F44336", "أفا يا حمد! فضفض وطلع اللي بقلبك، الضيقة ما تدوم وبكرا أجمل بإذن الله."
+    # ردود سلبية متنوعة
+    neg_replies = [
+        "أفا يا حمد! فضفض وطلع اللي بقلبك، الضيقة ما تدوم وبكرا أجمل بإذن الله.",
+        "لا يضيق صدرك يا بطل، حنا معك واليوم السيء يجي بعده يوم يشرح الصدر.",
+        "الخاطر يضيق ويرجع يزين، تفاءل وخذ لك بريك وبتعدي السحابة."
+    ]
     
-    elif any(word in text for word in positive):
-        return "إيجابي", "#4CAF50", "يا سلام على الروقان! عسى هالضحكة والوناسة دوم يا بطل."
+    # ردود إيجابية متنوعة
+    pos_replies = [
+        "يا سلام على الروقان! عسى هالضحكة والوناسة مرافقة لخطواتك دوم يا حمد.",
+        "كفو! طاقة إيجابية رهيبة، استمر في يومك الجميل يا بطل.",
+        "ما شاء الله! الروح الحلوة هذي هي اللي تفتح الأبواب، دوم مستانس يارب."
+    ]
     
-    elif any(word in text for word in neutral):
-        return "محايد", "#607D8B", "يوم هادي ومستقر، الاستقرار نعمة يا حمد."
-    
+    # ردود محايدة متنوعة
+    neu_replies = [
+        "يوم هادي ومستقر، الاستقرار أحياناً يكون أجمل شي. خلك رايق.",
+        "ماشي الحال، أهم شي إنك بخير ومرتاح البال يا حمد.",
+        "الاستقرار النفسي نعمة، يومك موفق وسعيد بإذن الله."
+    ]
+
+    # منطق الفحص
+    if any(word in text for word in negative_keys):
+        return "سلبي", "#F44336", random.choice(neg_replies)
+    elif any(word in text for word in positive_keys):
+        return "إيجابي", "#4CAF50", random.choice(pos_replies)
+    elif any(word in text for word in neutral_keys):
+        return "محايد", "#607D8B", random.choice(neu_replies)
     else:
-        return "غير محدد", "#2196F3", "كلامك جميل يا حمد، الأهم إنك تكون بخير ومرتاح البال."
+        return "غير محدد", "#2196F3", "كلامك جميل يا حمد، الأهم إنك تكون بخير ومرتاح البال دائماً."
 
-# --- 4. الواجهة (نفس الصورة تماماً) ---
+# --- 4. واجهة التطبيق ---
 st.title("🤖 نظام حمد الذكي")
 st.write("وش يدور في خاطرك: فضفض وسوف يتم تحليلك!")
 
@@ -65,19 +86,18 @@ with col1:
 with col2:
     gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-user_input = st.text_area("اكتب شعورك هنا:")
+user_input = st.text_area("اكتب شعورك هنا بالعامية عادي:")
 
 if st.button("بدء التحليل وإطلاق القوة 🚀"):
     if not user_name.strip() or not user_input.strip():
         st.warning("يا بطل سجل بياناتك أول!")
     else:
-        with st.spinner("جاري التحليل..."):
+        with st.spinner("جاري التحليل الفوري..."):
             time.sleep(1)
         
         mood_type, color, reply = analyze_mood(user_input)
         prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
         
-        # عرض النتيجة بدون النجوم ✨ اللي ضايقتك
         st.markdown(f"""
         <div class="result-box" style="background:{color};">
             <h2 style="color:white; margin:0;">النتيجة يا {prefix} {user_name}</h2>
@@ -88,7 +108,4 @@ if st.button("بدء التحليل وإطلاق القوة 🚀"):
         
         # زر الواتساب
         share_msg = urllib.parse.quote(f"تحليل مزاجي من نظام حمد الذكي: {reply}")
-        st.markdown(f'<a href="https://wa.me/?text={share_msg}" target="_blank" class="whatsapp-btn">📤 شارك النتيجة على واتساب</a>', unsafe_allow_html=True)
-
-st.markdown("---")
-st.caption("صنع بـ ❤️ بواسطة حمد | 2026")
+        st.markdown(f'<a href="https://wa.me/?text={share_msg}" target="_blank" class="whatsapp-btn">📤 شارك الن
