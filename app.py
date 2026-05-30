@@ -4,26 +4,49 @@ import time
 import urllib.parse
 
 # --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="نظام حمد الذكي", layout="centered")
+st.set_page_config(page_title="نظام حمد الذكي", layout="centered", initial_sidebar_state="collapsed")
 
-# CSS التصميم (نفس لمستك الفخمة)
+# --- 2. CSS حق التصميم (لمسة حمد الفخمة) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-    html, body, [class*="st-"] {font-family: 'Tajawal', sans-serif; direction: rtl; text-align: right;}
+    html, body, [class*="st-"] {
+        font-family: 'Tajawal', sans-serif; 
+        direction: rtl; 
+        text-align: right;
+    }
+    /* تنسيق زر التحليل بتدرج الألوان حقك */
     .stButton>button {
         width: 100%; border-radius: 15px; font-weight: bold;
         background: linear-gradient(90deg, #4CAF50, #2196F3);
         color: white; border: none; padding: 12px; font-size: 18px;
+        transition: 0.3s;
     }
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    /* صندوق النتيجة */
     .result-box {
-        padding: 20px; border-radius: 15px; margin-top: 20px;
+        padding: 25px; border-radius: 15px; margin-top: 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: white;
+        animation: fadeIn 0.8s ease-in;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(20px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+    /* زر الواتساب */
+    .whatsapp-btn {
+        display: block; width: 100%; background-color: #25D366;
+        color: white !important; padding: 12px; border-radius: 15px;
+        text-align: center; text-decoration: none; margin-top: 15px;
+        font-weight: bold; font-size: 16px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. بوت الردود (كودك اللي كتبته بس مرتب للموقع) ---
+# --- 3. كود بوت الردود (كود حمد المرتب) ---
 class HamadBot:
     def __init__(self):
         self.replies = {
@@ -41,47 +64,52 @@ class HamadBot:
         }
 
     def get_reply(self, mood):
+        mood = mood.lower()
         for key in self.replies.keys():
             if key in mood:
                 return random.choice(self.replies[key]), self.colors.get(key, "#333")
         return "وش يدور في خاطرك؟ فضفض وسوف يتم تحليلك 😎", "#607D8B"
 
+# تشغيل البوت
 bot = HamadBot()
 
-# --- 3. الواجهة ---
+# --- 4. واجهة التطبيق ---
 st.title("🤖 نظام حمد الذكي")
-st.write("حلل طاقتك وشعورك بأذكى الخوارزميات (ونسخة حمد الخاصة!)")
+st.write("وش يدور في خاطرك: فضفض وسوف يتم تحليلك!")
 
 col1, col2 = st.columns(2)
 with col1:
-    user_name = st.text_input("سجل اسمك:", placeholder="حمد")
+    user_name = st.text_input("سجل اسمك:", placeholder="مثلاً: حمد")
 with col2:
     gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
 
-user_input = st.text_area("اكتب شعورك هنا (مثلاً: جوعان، طفشان، مبسوط...):")
+user_input = st.text_area("اكتب شعورك هنا (مثلاً: طفشان، جوعان، قوي...):", height=100)
 
 if st.button("بدء التحليل وإطلاق القوة 🚀"):
     if not user_name.strip() or not user_input.strip():
-        st.warning("يا بطل سجل اسمك ومزاجك أول!")
+        st.warning("يا بطل سجل اسمك واكتب شعورك أول!")
     else:
-        with st.spinner("جاري التحليل..."):
-            time.sleep(1)
+        with st.spinner("جاري تحليل قوتك النفسية..."):
+            time.sleep(1.2)
         
         reply, color = bot.get_reply(user_input)
         prefix = "الأستاذ" if gender == "ذكر" else "الأستاذة"
+        name_display = f"{prefix} {user_name.strip()}"
         
+        # عرض النتيجة بتصميم حمد
         st.markdown(f"""
-        <div class="result-box" style="background:{color}">
-            <h3>النتيجة يا {prefix} {user_name}:</h3>
+        <div class="result-box" style="background:{color}; color: {'black' if color=='#FFC107' else 'white'}">
+            <h3 style="margin-top:0;">النتيجة يا {name_display} ✨</h3>
             <p style="font-size: 20px; font-weight: bold;">{reply}</p>
         </div>
         """, unsafe_allow_html=True)
         
         st.balloons()
         
-        # مشاركة واتساب
-        share_msg = urllib.parse.quote(f"نتيجة تحليلي من نظام حمد الذكي: {reply}")
-        st.markdown(f'<a href="https://wa.me/?text={share_msg}" target="_blank" style="text-decoration:none;"><button style="margin-top:10px; background:#25D366; color:white; width:100%; border-radius:15px; padding:10px; border:none; font-weight:bold;">📤 شارك النتيجة</button></a>', unsafe_allow_html=True)
+        # زر مشاركة واتساب
+        share_msg = urllib.parse.quote(f"حللت مزاجي في نظام حمد الذكي وطلعت النتيجة: {reply}")
+        st.markdown(f'<a href="https://wa.me/?text={share_msg}" target="_blank" class="whatsapp-btn">📤 شارك النتيجة على واتساب</a>', unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("صنع بـ ❤️ بواسطة حمد | 2026")
+        
