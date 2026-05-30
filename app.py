@@ -6,7 +6,7 @@ import urllib.parse
 # --- 1. إعدادات الصفحة ---
 st.set_page_config(page_title="نظام حمد الذكي", layout="centered")
 
-# --- 2. التنسيق البصري (نفس الروح اللي تحبها) ---
+# --- 2. التنسيق البصري ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
@@ -22,7 +22,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. المحرك الذكي (العامية + تنوع الردود) ---
+# --- 3. المحرك الذكي (تم تصحيح الإملاء) ---
 def analyze_all(text, name, gender):
     text = text.lower()
     p_title = "يا بطل" if gender == "ذكر" else "يا بطلة"
@@ -40,9 +40,9 @@ def analyze_all(text, name, gender):
     elif any(word in text for word in ["قوي", "وحش", "كفو", "أقدر"]):
         return "#4CAF50", random.choice([f"كفو {p_title} {name}! وحش ومحد قدك.", f"عزيمة حديد يا {name}."])
 
-    # [تحليل المشاعر الأساسي]
-    elif any(word in text for word in ["مستانس", "مروق", "وناسة", "فرحان", "مبسوظ"]):
-        return "#4CAF50", random.choice([f"دوم هالروقان {p_title} {name}!", f"يا عيني على المزاج العالي يا {name}."])
+    # [تحليل المشاعر الأساسي - تم تعديل مبسوط ✅]
+    elif any(word in text for word in ["مستانس", "مروق", "وناسة", "فرحان", "مبسوط"]):
+        return "#4CAF50", random.choice([f"دوم هالضحكة والروقان {p_title} {name}!", f"يا عيني على المزاج العالي يا {name}."])
     
     elif any(word in text for word in ["ضايق", "منغث", "طفشان", "زهقان", "زعلان"]):
         return "#F44336", random.choice([f"أفا يا {name}، الضيقة ما تدوم.", f"فضفض {p_title} {name}، وبكرا أجمل."])
@@ -53,7 +53,7 @@ def analyze_all(text, name, gender):
     else:
         return "#2196F3", f"منور {p_title} {name}، نورت البرنامج."
 
-# --- 4. الواجهة الرسمية ---
+# --- 4. الواجهة الرسمية (بدون حرق) ---
 st.title("🤖 نظام حمد الذكي")
 
 col1, col2 = st.columns(2)
@@ -66,13 +66,13 @@ user_input = st.text_area("وش بخاطرك الحين؟")
 
 if st.button("بدء التحليل 🚀"):
     if input_name.strip() and user_input.strip():
-        with st.spinner("لحظة..."):
+        with st.spinner("جاري التحليل..."):
             time.sleep(1)
         color, reply = analyze_all(user_input, input_name, gender)
         
         st.markdown(f'<div class="result-box" style="background:{color};"><h2>{reply}</h2></div>', unsafe_allow_html=True)
         
-        # زر الواتساب (المشاركة)
+        # مشاركة واتساب
         whatsapp_msg = urllib.parse.quote(f"نتيجة تحليلي في نظام حمد الذكي: {reply}")
         st.markdown(f'<div style="text-align:center;"><a href="https://wa.me/?text={whatsapp_msg}" target="_blank" class="whatsapp-btn">مشاركة عبر الواتساب ✅</a></div>', unsafe_allow_html=True)
     else:
@@ -90,3 +90,4 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.caption("صنع بـ ❤️ بواسطة حمد | 2026")
+                                       
