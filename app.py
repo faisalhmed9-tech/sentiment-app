@@ -1,93 +1,41 @@
 import streamlit as st
-import random
-import time
-import urllib.parse
 
-# --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="نظام حمد الذكي", layout="centered")
-
-# --- 2. التنسيق البصري ---
+# 1. التنسيق الثابت
 st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-    html, body, [class*="st-"] { font-family: 'Tajawal', sans-serif; direction: rtl; text-align: right; }
-    .stButton>button {
-        width: 100%; border-radius: 15px; font-weight: bold;
-        background: linear-gradient(90deg, #4CAF50, #2196F3);
-        color: white; border: none; padding: 15px; font-size: 18px;
+    <style>
+    .stApp { background-color: #0f172a; color: white; }
+    .stTextInput>div>div>input {
+        background-color: #1e293b !important; color: white !important;
+        border: 2px solid #38bdf8 !important; border-radius: 12px !important;
     }
-    .result-box { padding: 30px; border-radius: 20px; margin-top: 25px; color: white; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    .insta-box { text-align: center; margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 15px; border: 1px solid #ddd; }
-    .whatsapp-btn { background-color: #25D366; color: white !important; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
-</style>
-""", unsafe_allow_html=True)
+    .stButton>button {
+        width: 100%; background-color: #38bdf8; color: #0f172a;
+        font-weight: bold; border-radius: 12px; border: none; height: 3em;
+    }
+    .pos-box { padding: 20px; border-radius: 15px; border: 2px solid #22c55e; background: rgba(34,197,94,0.1); color: #4ade80; text-align: center; }
+    .neg-box { padding: 20px; border-radius: 15px; border: 2px solid #ef4444; background: rgba(239,68,68,0.1); color: #f87171; text-align: center; }
+    .neu-box { padding: 20px; border-radius: 15px; border: 2px solid #94a3b8; background: rgba(148,163,184,0.1); color: #cbd5e1; text-align: center; }
+    .special-box { padding: 20px; border-radius: 15px; border: 2px solid #f472b6; background: rgba(244,114,182,0.1); color: #f472b6; text-align: center; }
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- 3. المحرك الذكي (تم تصحيح الإملاء) ---
-def analyze_all(text, name, gender):
-    text = text.lower()
-    p_title = "يا بطل" if gender == "ذكر" else "يا بطلة"
+st.title("نظام التحليل")
+text = st.text_input("أدخل النص:")
 
-    # [الحالات الشاطحة]
-    if any(word in text for word in ["أحبك", "حب", "يا بعدي", "عشق"]):
-        return "#FF4B2B", random.choice([f"يا بعد قلبي {p_title} {name}!", f"المحبة متبادلة يا {name}.", f"تستاهل الحب يا {name}."])
-    
-    elif any(word in text for word in ["جوعان", "أكل", "جعت", "ميت جوع"]):
-        return "#FFA500", random.choice([f"يا {name} قم اضرب بالخمس!", f"عوافي مقدماً {p_title} {name}."])
-    
-    elif any(word in text for word in ["تعبان", "مرهق", "أنام", "دايخ"]):
-        return "#607D8B", random.choice([f"سلامتك من التعب {p_title} {name}.", f"ارتاح يا {name}، الجسم له حق."])
-    
-    elif any(word in text for word in ["قوي", "وحش", "كفو", "أقدر"]):
-        return "#4CAF50", random.choice([f"كفو {p_title} {name}! وحش ومحد قدك.", f"عزيمة حديد يا {name}."])
-
-    # [تحليل المشاعر الأساسي - تم تعديل مبسوط ✅]
-    elif any(word in text for word in ["مستانس", "مروق", "وناسة", "فرحان", "مبسوط"]):
-        return "#4CAF50", random.choice([f"دوم هالضحكة والروقان {p_title} {name}!", f"يا عيني على المزاج العالي يا {name}."])
-    
-    elif any(word in text for word in ["ضايق", "منغث", "طفشان", "زهقان", "زعلان"]):
-        return "#F44336", random.choice([f"أفا يا {name}، الضيقة ما تدوم.", f"فضفض {p_title} {name}، وبكرا أجمل."])
-    
-    elif any(word in text for word in ["عادي", "تمام", "طيب", "ماشي"]):
-        return "#808080", f"يوم هادي ومستقر يا {name}."
-
-    else:
-        return "#2196F3", f"منور {p_title} {name}، نورت البرنامج."
-
-# --- 4. الواجهة الرسمية (بدون حرق) ---
-st.title("🤖 نظام حمد الذكي")
-
-col1, col2 = st.columns(2)
-with col1:
-    input_name = st.text_input("سجل اسمك للاختبار:", placeholder="")
-with col2:
-    gender = st.radio("الجنس:", ["ذكر", "أنثى"], horizontal=True)
-
-user_input = st.text_area("وش بخاطرك الحين؟")
-
-if st.button("بدء التحليل 🚀"):
-    if input_name.strip() and user_input.strip():
-        with st.spinner("جاري التحليل..."):
-            time.sleep(1)
-        color, reply = analyze_all(user_input, input_name, gender)
+if st.button("تحليل"):
+    if text:
+        # الكلمات الشاطحة بـ 3 إجابات
+        if "حب" in text:
+            st.markdown('<div class="special-box"><h3>حب</h3><p>1. المشاعر مرتفعة</p><p>2. قلبك أخضر</p><p>3. أيامك مودة</p></div>', unsafe_allow_html=True)
+        elif "جوع" in text:
+            st.markdown('<div class="neu-box"><h3>جوع</h3><p>1. وقت العشاء</p><p>2. اترك الجوال وكل</p><p>3. البطن خالية</p></div>', unsafe_allow_html=True)
+        elif "هياط" in text:
+            st.markdown('<div class="neg-box"><h3>هياط</h3><p>1. اذكر الله</p><p>2. هد اللعب</p><p>3. خلك ريلاكس</p></div>', unsafe_allow_html=True)
         
-        st.markdown(f'<div class="result-box" style="background:{color};"><h2>{reply}</h2></div>', unsafe_allow_html=True)
-        
-        # مشاركة واتساب
-        whatsapp_msg = urllib.parse.quote(f"نتيجة تحليلي في نظام حمد الذكي: {reply}")
-        st.markdown(f'<div style="text-align:center;"><a href="https://wa.me/?text={whatsapp_msg}" target="_blank" class="whatsapp-btn">مشاركة عبر الواتساب ✅</a></div>', unsafe_allow_html=True)
-    else:
-        st.warning("سجل بياناتك كاملة يا بطل!")
-
-# --- 5. صندوق الاقتراحات (إنستغرام) ---
-st.markdown("---")
-st.markdown(f"""
-    <div class="insta-box">
-        <p style="color:#333; margin-bottom:10px;">عندك اقتراح لتطوير النظام؟ أرسله هنا:</p>
-        <a href="https://www.instagram.com/hamd_9367_?igsh=MTV6eHF5ZXdndGZ1dw==" target="_blank" style="color:#E1306C; font-weight:bold; text-decoration:none;">
-            📸 حساب حمد (صندوق الاقتراحات)
-        </a>
-    </div>
-""", unsafe_allow_html=True)
-
-st.caption("صنع بـ ❤️ بواسطة حمد | 2026")
-                                       
+        # المشاعر الأساسية بـ 3 إجابات
+        elif any(word in text for word in ["كفو", "حلو", "زين"]):
+            st.markdown('<div class="pos-box"><h3>إيجابي</h3><p>1. كلام يفتح النفس</p><p>2. طاقة إيجابية</p><p>3. استمر بجمالك</p></div>', unsafe_allow_html=True)
+        elif any(word in text for word in ["سيء", "حزين", "ضيق"]):
+            st.markdown('<div class="neg-box"><h3>سلبي</h3><p>1. الله يبعد الضيقة</p><p>2. فتره وتعدي</p><p>3. بكرة أجمل</p></div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="neu-box"><h3>محايد</h3><p>1. كلام موزون</p><p>2. وضعك مستقر</p><p>3. لا يوجد انفعال</p></div>', unsafe_allow_html=True)
